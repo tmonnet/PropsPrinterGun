@@ -807,8 +807,8 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 114265272882989858, guid: 7f4e79ceba2317e419143cf4de225491,
         type: 2}
-      propertyPath: id
-      value: 16516
+      propertyPath: printingDuration
+      value: 2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 7f4e79ceba2317e419143cf4de225491, type: 2}
@@ -975,7 +975,7 @@ MonoBehaviour:
   scanRange: 10
   maxFireRate: 0.2
   antimatterQuantity: 100
-  antimatterRegen: 30
+  antimatterRegen: 5
   inventoryText:
   - {fileID: 335406326}
   - {fileID: 200907896}
@@ -984,6 +984,7 @@ MonoBehaviour:
   selectedColor: {r: 0.8897059, g: 1, b: 0.90415823, a: 1}
   baseColor: {r: 0.2509804, g: 0.2509804, b: 0.2509804, a: 1}
   antimatterSlider: {fileID: 1167783789}
+  antimatterRegenLerpSpeed: 2
   scanCursor: {fileID: 115594731}
   alreadyScannedText: {fileID: 2029299329}
 --- !u!4 &1243475165 stripped

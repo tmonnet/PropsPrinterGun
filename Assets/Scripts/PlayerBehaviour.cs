@@ -29,6 +29,7 @@ public class PlayerBehaviour : MonoBehaviour {
 	public Text[] inventoryText = new Text[4];
 	public Color selectedColor, baseColor;
 	public Slider antimatterSlider;
+	public float antimatterRegenLerpSpeed;
 	public ScanIconRotation scanCursor;
 	public Text alreadyScannedText;
 
@@ -74,7 +75,11 @@ public class PlayerBehaviour : MonoBehaviour {
 			if(inventory[_selectedSlot].prefab != null){
 				if(_mode == PlayerMode.CombatMode){
 					//Instantiate and launch object
-					Instantiate(inventory[_selectedSlot].prefab, playerHead.position + playerHead.forward, playerHead.rotation);
+					if(CheckAntimatter()){
+						_propsTemp = Instantiate(inventory[_selectedSlot].prefab, playerHead.position + playerHead.forward, playerHead.rotation).GetComponent<PropsBehaviour>();
+						_propsTemp.Print();
+						_propsTemp = null;
+					}
 				}else{
 					//Instantiate object
 				}
@@ -137,6 +142,18 @@ public class PlayerBehaviour : MonoBehaviour {
 		if(Input.GetButtonDown("Hotkey4")){
 			ChangeSlot(3);
 		}
+
+		// ANTI MATTER REGEN -----------------------------------------------------
+
+		if(_antimatterValue < antimatterQuantity){
+			SetAntimatter(_antimatterValue + antimatterRegen*Time.deltaTime);
+
+		}
+	}
+
+	private void SetAntimatter(float value){
+		_antimatterValue = value;
+		antimatterSlider.DOValue(_antimatterValue/antimatterQuantity, (Mathf.Abs(_antimatterValue-antimatterSlider.value) / antimatterQuantity)*antimatterRegenLerpSpeed );
 	}
 
 	private void StartScan(){
@@ -176,5 +193,14 @@ public class PlayerBehaviour : MonoBehaviour {
 		inventoryText[_selectedSlot].color = baseColor;
 		_selectedSlot = slot;
 		inventoryText[_selectedSlot].color = selectedColor;
+	}
+
+	private bool CheckAntimatter(){
+		float temp = _antimatterValue - inventory[_selectedSlot].printingCost;
+		if(temp >= 0f){
+			SetAntimatter(temp);
+			return true;
+		}
+		return false;
 	}
 }

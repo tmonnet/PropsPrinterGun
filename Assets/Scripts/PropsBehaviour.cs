@@ -6,7 +6,8 @@ using DG.Tweening;
 public enum PropsState{
 	Preview_Idle,
 	Preview_Error,
-	Printed
+	Printed,
+	Printed_In_Progress
 }
 
 public class PropsBehaviour : MonoBehaviour {
@@ -32,6 +33,7 @@ public class PropsBehaviour : MonoBehaviour {
 	void Awake()
 	{
 		_scanMaterial = GetComponent<Renderer>().materials[0];
+		_printMaterial = GetComponent<Renderer>().materials[1];
 		_collider = GetComponent<Collider>();
 		_rb = GetComponent<Rigidbody>();
 		_state = PropsState.Printed;
@@ -41,7 +43,18 @@ public class PropsBehaviour : MonoBehaviour {
 
 	//called when this props is printed
 	public void Print(){
-		_state = PropsState.Printed;
+		_rb.isKinematic = true;
+		_state = PropsState.Printed_In_Progress;
+		_scanMaterial.SetFloat("_ScanValue", scanEndValue);
+		_printMaterial.SetFloat("_DissolveRatio", 1f);
+		_printMaterial.DOFloat(0f, "_DissolveRatio", printingDuration).SetEase(Ease.Linear).OnComplete(
+				()=>{
+					_scanMaterial.SetFloat("_ScanValue", scanStartValue);
+					_state = PropsState.Printed;
+					_rb.isKinematic = false;
+				}
+		);
+
 	}
 
 	//called when the player start scanning this props
@@ -74,7 +87,7 @@ public class PropsBehaviour : MonoBehaviour {
 	void OnCollisionEnter(Collision other)
 	{
 		if(wallPenetration > 0f && other.transform.tag == "Penetrable"){
-
+			
 		}
 	}
 }
