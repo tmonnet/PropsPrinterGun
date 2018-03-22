@@ -11,11 +11,15 @@ public enum PropsState{
 
 public class PropsBehaviour : MonoBehaviour {
 
+	public int id;
 	public float scanningDuration;
 	public float printingDuration;
 	public float printingCost;
 	public float wallPenetration;
 	public GameObject prefab;
+	[Header("Material")]
+	public float scanStartValue;
+	public float scanEndValue;
 
 	private Material _printMaterial;
 	private Material _scanMaterial;
@@ -43,14 +47,13 @@ public class PropsBehaviour : MonoBehaviour {
 	//called when the player start scanning this props
 	public void Scan(PlayerBehaviour player){ //add player as an argument
 		if(_state == PropsState.Printed && !_isScanned){
-			Debug.Log("Start Internal");
 			_isScanned = true;
-			_scanMaterial.DOFloat(0.75f, "_ScanValue", scanningDuration).SetEase(Ease.Linear).OnComplete(
+			_scanTween = _scanMaterial.DOFloat(scanEndValue, "_ScanValue", scanningDuration).SetEase(Ease.Linear).OnComplete(
 				()=>{
-					_scanMaterial.SetFloat("_ScanValue", 0.25f);
+					_scanMaterial.SetFloat("_ScanValue", scanStartValue);
 					_isScanned = false;
 					_scanTween = null;
-					player.AddProps(prefab, scanningDuration, printingDuration, printingCost);
+					player.AddProps(prefab, scanningDuration, printingDuration, printingCost, id);
 					//call method on the player to add this props in a slot
 				}
 			);
@@ -61,11 +64,10 @@ public class PropsBehaviour : MonoBehaviour {
 	//called when the player stop scanning this props
 	public void ScanStop(){
 		if(_state == PropsState.Printed && _scanTween != null && _isScanned){
-			Debug.Log("Stop Internal");
 			_scanTween.Kill();
 			_scanTween = null;
 			_isScanned = false;
-			_scanMaterial.SetFloat("_ScanValue", 0f);
+			_scanMaterial.SetFloat("_ScanValue", scanStartValue);
 		}
 	}
 

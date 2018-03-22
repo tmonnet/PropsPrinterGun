@@ -129,3 +129,5 @@ MonoBehaviour:
   printingCost: 15
   wallPenetration: 0
   prefab: {fileID: 1941872319670462}
+  scanStartValue: 0.249
+  scanEndValue: 0.75

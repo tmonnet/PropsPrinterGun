@@ -5,6 +5,7 @@ using UnityEngine;
 using DG.Tweening;
 
 public struct PropsSlot{
+	public float id;
 	public float scanningDuration;
 	public float printingDuration;
 	public float printingCost;
@@ -24,10 +25,12 @@ public class PlayerBehaviour : MonoBehaviour {
 	public float antimatterQuantity;
 	public float antimatterRegen;
 
-	[Header("UI")]
+	[Header("--UI--")]
 	public Text[] inventoryText = new Text[4];
 	public Color selectedColor, baseColor;
 	public Slider antimatterSlider;
+	public ScanIconRotation scanCursor;
+	public Text alreadyScannedText;
 
 	private PropsSlot[] inventory = new PropsSlot[4];
 
@@ -38,12 +41,22 @@ public class PlayerBehaviour : MonoBehaviour {
 	private int _selectedSlot = 0;
 	private float _antimatterValue;
 
-	public void AddProps(GameObject prefab, float scanningDuration, float printingDuration, float printingCost){
+	public void AddProps(GameObject prefab, float scanningDuration, float printingDuration, float printingCost, int id){
 		if(prefab!=null){
+
+			foreach(PropsSlot ps in inventory){
+				if(ps.id == id){
+					alreadyScannedText.color = new Color(alreadyScannedText.color.r, alreadyScannedText.color.g, alreadyScannedText.color.b, 1f);
+					alreadyScannedText.DOColor(new Color(alreadyScannedText.color.r, alreadyScannedText.color.g, alreadyScannedText.color.b, 0f), 1f);
+					return;
+				}
+			}
+
 			inventory[_selectedSlot].prefab = prefab;
 			inventory[_selectedSlot].scanningDuration = scanningDuration;
 			inventory[_selectedSlot].printingDuration = printingDuration;
 			inventory[_selectedSlot].printingCost = printingCost;
+			inventory[_selectedSlot].id = id;
 			inventoryText[_selectedSlot].DOText(prefab.name,0.5f);
 		}
 	}
@@ -72,6 +85,7 @@ public class PlayerBehaviour : MonoBehaviour {
 
 		//Start scanning
 		if(Input.GetButtonDown("Fire2")){
+			scanCursor.gameObject.SetActive(true);
 			StartScan();
 		}
 
@@ -86,6 +100,7 @@ public class PlayerBehaviour : MonoBehaviour {
 
 		//Stop scanning
 		if(Input.GetButtonUp("Fire2")){
+			scanCursor.gameObject.SetActive(false);
 			StopScan();
 		}
 
@@ -128,6 +143,7 @@ public class PlayerBehaviour : MonoBehaviour {
 		if(Physics.Raycast(playerHead.position, playerHead.forward, out _hit, scanRange)){
 			_propsScanned = _hit.collider.GetComponent<PropsBehaviour>();
 			if(_propsScanned != null){
+				scanCursor.SetScanning(true);
 				_propsScanned.Scan(this);
 			}
 		}
@@ -147,6 +163,7 @@ public class PlayerBehaviour : MonoBehaviour {
 	}
 
 	private void StopScan(){
+		scanCursor.SetScanning(false);
 		Debug.Log("Stop");
 		if(_propsScanned != null){
 			_propsScanned.ScanStop();
