@@ -31,6 +31,7 @@ public class PropsBehaviour : MonoBehaviour {
 	private bool _isScanned = false;
 	private Tween _scanTween = null;
 	private PropsState _state;
+	private PlayerBehaviour _owner = null;
 
 	void Awake()
 	{
@@ -45,7 +46,7 @@ public class PropsBehaviour : MonoBehaviour {
 
 	public void Preview(){
 		_rb.isKinematic = true;
-		_collider.enabled = false;
+		_collider.isTrigger = true;
 		_state = PropsState.Preview_Idle;
 		_printMaterial.SetFloat("_DissolveRatio", 1f);
 		_scanMaterial.SetFloat("_ScanValue", scanEndValue);
@@ -54,7 +55,7 @@ public class PropsBehaviour : MonoBehaviour {
 
 	public void PreviewError(){
 		_rb.isKinematic = true;
-		_collider.enabled = false;
+		_collider.isTrigger = true;
 		_state = PropsState.Preview_Error;
 		_scanMaterial.SetFloat("_ScanValue", scanEndValue);
 		_scanMaterial.color = new Color(1f, 0f, 0f, _scanColor.a);
@@ -63,7 +64,7 @@ public class PropsBehaviour : MonoBehaviour {
 	//called when this props is printed
 	public void Print(){
 		_rb.isKinematic = true;
-		_collider.enabled = true;
+		_collider.isTrigger = false;
 		_state = PropsState.Printed_In_Progress;
 		_scanMaterial.SetFloat("_ScanValue", scanEndValue);
 		_printMaterial.SetFloat("_DissolveRatio", 1f);
@@ -119,5 +120,18 @@ public class PropsBehaviour : MonoBehaviour {
 		if(wallPenetration > 0f && other.transform.tag == "Penetrable"){
 			
 		}
+	}
+
+	void OnTriggerStay(Collider other)
+	{
+
+	}
+
+	public PlayerBehaviour GetOwner(){
+		return _owner;
+	}
+
+	public void SetOwner(PlayerBehaviour pb){
+		_owner = pb;
 	}
 }

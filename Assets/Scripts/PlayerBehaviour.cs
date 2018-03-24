@@ -19,13 +19,16 @@ public enum PlayerMode{
 
 public class PlayerBehaviour : MonoBehaviour {
 
+	#region PublicVar
 	public Transform playerHead;
 	public float scanRange;
 	public float destroyRange;
 	public float maxFireRate;
 	public float antimatterQuantity;
 	public float antimatterRegen;
+	#endregion
 
+	#region PublicVarUI
 	[Header("--UI--")]
 	public Text[] inventoryText = new Text[4];
 	public Color selectedColor, baseColor;
@@ -36,7 +39,9 @@ public class PlayerBehaviour : MonoBehaviour {
 	public Text destroyText;
 	public RawImage buildIcon;
 	public RawImage combatIcon;
-
+	#endregion
+	
+	#region PrivateVar
 	private PropsSlot[] inventory = new PropsSlot[4];
 	private PropsBehaviour _propsScanned = null;
 	private PropsBehaviour _propsTemp = null;
@@ -48,7 +53,7 @@ public class PlayerBehaviour : MonoBehaviour {
 	private Camera _cam;
 	private int _selectedSlot = 0;
 	private float _antimatterValue;
-
+	#endregion
 	
 
 	void Start () {
@@ -67,12 +72,15 @@ public class PlayerBehaviour : MonoBehaviour {
 					//Instantiate and launch object
 					if(CheckAntimatter()){
 						_propsPrinted = Instantiate(inventory[_selectedSlot].prefab, playerHead.position + playerHead.forward, playerHead.rotation).GetComponent<PropsBehaviour>();
+						_propsPrinted.SetOwner(this);
 						_propsPrinted.Print();
 						_propsPrinted = null;
 					}
 				}else{
-					_propsPreview.Print();
-					_propsPreview = null;
+					if(_propsPreview != null){
+						_propsPreview.Print();
+						_propsPreview = null;
+					}
 				}
 			}
 		}
@@ -145,25 +153,32 @@ public class PlayerBehaviour : MonoBehaviour {
 
 		if(_mode == PlayerMode.BuildMode){
 			Highlight();
-			if(_propsSelected != null){
+			if(_propsSelected != null && _propsSelected.GetOwner() == this){
 				float dist = Vector3.Distance(_propsSelected.transform.position, playerHead.position);
 				if(dist <= destroyRange){
 					destroyText.transform.position = _cam.WorldToScreenPoint(_propsSelected.transform.position);
 					destroyText.transform.localScale = Vector3.one * (1f - dist/destroyRange);
 					destroyText.gameObject.SetActive(true);
+
+					if(Input.GetButtonDown("Destroy")){
+						Destroy(_propsSelected.gameObject);
+						_propsSelected = null;
+						_propsTemp = null;
+					}
 				}else{
 					destroyText.gameObject.SetActive(false);
 				}
 			}else{
 				destroyText.gameObject.SetActive(false);
 			}
+		}else{
+			if(_propsSelected != null){
+				_propsSelected.Highlight(false);
+				_propsSelected = null;
+			}
 		}
 
-		if(Input.GetButtonDown("Destroy")){
-			Destroy(_propsSelected.gameObject);
-			_propsSelected = null;
-			_propsTemp = null;
-		}
+		
 
 		// MODE SWAP ------------------------------------------------------------
 
@@ -197,7 +212,6 @@ public class PlayerBehaviour : MonoBehaviour {
 			case PlayerMode.BuildMode : 
 				combatIcon.gameObject.SetActive(false);
 				buildIcon.gameObject.SetActive(true);
-
 
 				_mode = PlayerMode.BuildMode;
 				if(inventory[_selectedSlot].prefab != null){

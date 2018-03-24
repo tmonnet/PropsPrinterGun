@@ -60,6 +60,7 @@ MeshRenderer:
   m_Materials:
   - {fileID: 2100000, guid: 020b34567826fb6478474dd9a2d1ef97, type: 2}
   - {fileID: 2100000, guid: 737525ebbaab53f4ca45ff35fd92960d, type: 2}
+  - {fileID: 2100000, guid: 6979f5b6882015e4a8ed77a5cafee23e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -126,7 +127,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: 16516
   scanningDuration: 1.5
-  printingDuration: 4
+  printingDuration: 2
   printingCost: 30
   wallPenetration: 0
   prefab: {fileID: 1941872319670462}

@@ -38,7 +38,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1015813843647576}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.544, y: 1.2148063, z: -2.981}
+  m_LocalPosition: {x: 0.544, y: 0.85, z: -2.981}
   m_LocalScale: {x: 3, y: 0.25, z: 3}
   m_Children: []
   m_Father: {fileID: 0}
@@ -60,6 +60,7 @@ MeshRenderer:
   m_Materials:
   - {fileID: 2100000, guid: 020b34567826fb6478474dd9a2d1ef97, type: 2}
   - {fileID: 2100000, guid: 737525ebbaab53f4ca45ff35fd92960d, type: 2}
+  - {fileID: 2100000, guid: 6979f5b6882015e4a8ed77a5cafee23e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -124,7 +125,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8684f15a1330dc41937729d43daa6b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 896416156
+  id: 145
   scanningDuration: 2
   printingDuration: 2
   printingCost: 50
