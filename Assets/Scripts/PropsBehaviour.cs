@@ -24,6 +24,8 @@ public class PropsBehaviour : MonoBehaviour {
 
 	private Material _printMaterial;
 	private Material _scanMaterial;
+	private Material _selectionMaterial;
+	private Color _scanColor;
 	private Collider _collider;
 	private Rigidbody _rb;
 	private bool _isScanned = false;
@@ -34,16 +36,34 @@ public class PropsBehaviour : MonoBehaviour {
 	{
 		_scanMaterial = GetComponent<Renderer>().materials[0];
 		_printMaterial = GetComponent<Renderer>().materials[1];
+		_selectionMaterial = GetComponent<Renderer>().materials[2];
 		_collider = GetComponent<Collider>();
 		_rb = GetComponent<Rigidbody>();
 		_state = PropsState.Printed;
+		_scanColor = _scanMaterial.color;
 	}
 
+	public void Preview(){
+		_rb.isKinematic = true;
+		_collider.enabled = false;
+		_state = PropsState.Preview_Idle;
+		_printMaterial.SetFloat("_DissolveRatio", 1f);
+		_scanMaterial.SetFloat("_ScanValue", scanEndValue);
+		_scanMaterial.color = _scanColor;
+	}
 
+	public void PreviewError(){
+		_rb.isKinematic = true;
+		_collider.enabled = false;
+		_state = PropsState.Preview_Error;
+		_scanMaterial.SetFloat("_ScanValue", scanEndValue);
+		_scanMaterial.color = new Color(1f, 0f, 0f, _scanColor.a);
+	}
 
 	//called when this props is printed
 	public void Print(){
 		_rb.isKinematic = true;
+		_collider.enabled = true;
 		_state = PropsState.Printed_In_Progress;
 		_scanMaterial.SetFloat("_ScanValue", scanEndValue);
 		_printMaterial.SetFloat("_DissolveRatio", 1f);
@@ -55,6 +75,16 @@ public class PropsBehaviour : MonoBehaviour {
 				}
 		);
 
+	}
+
+	public void Highlight(bool value){
+		if(!_isScanned && _state == PropsState.Printed){
+			if(value){
+				_selectionMaterial.SetFloat("_ScanValue", 1f);
+			}else{
+				_selectionMaterial.SetFloat("_ScanValue", 0f);
+			}
+		}
 	}
 
 	//called when the player start scanning this props

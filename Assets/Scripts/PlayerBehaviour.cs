@@ -21,6 +21,7 @@ public class PlayerBehaviour : MonoBehaviour {
 
 	public Transform playerHead;
 	public float scanRange;
+	public float destroyRange;
 	public float maxFireRate;
 	public float antimatterQuantity;
 	public float antimatterRegen;
@@ -32,37 +33,26 @@ public class PlayerBehaviour : MonoBehaviour {
 	public float antimatterRegenLerpSpeed;
 	public ScanIconRotation scanCursor;
 	public Text alreadyScannedText;
+	public Text destroyText;
+	public RawImage buildIcon;
+	public RawImage combatIcon;
 
 	private PropsSlot[] inventory = new PropsSlot[4];
-
 	private PropsBehaviour _propsScanned = null;
 	private PropsBehaviour _propsTemp = null;
+	private PropsBehaviour _propsPrinted = null;
+	private PropsBehaviour _propsSelected = null;
+	private PropsBehaviour _propsPreview = null;
 	private RaycastHit _hit = new RaycastHit();
 	private PlayerMode _mode = PlayerMode.CombatMode;
+	private Camera _cam;
 	private int _selectedSlot = 0;
 	private float _antimatterValue;
 
-	public void AddProps(GameObject prefab, float scanningDuration, float printingDuration, float printingCost, int id){
-		if(prefab!=null){
-
-			foreach(PropsSlot ps in inventory){
-				if(ps.id == id){
-					alreadyScannedText.color = new Color(alreadyScannedText.color.r, alreadyScannedText.color.g, alreadyScannedText.color.b, 1f);
-					alreadyScannedText.DOColor(new Color(alreadyScannedText.color.r, alreadyScannedText.color.g, alreadyScannedText.color.b, 0f), 1f);
-					return;
-				}
-			}
-
-			inventory[_selectedSlot].prefab = prefab;
-			inventory[_selectedSlot].scanningDuration = scanningDuration;
-			inventory[_selectedSlot].printingDuration = printingDuration;
-			inventory[_selectedSlot].printingCost = printingCost;
-			inventory[_selectedSlot].id = id;
-			inventoryText[_selectedSlot].DOText(prefab.name,0.5f);
-		}
-	}
+	
 
 	void Start () {
+		_cam = playerHead.GetComponent<Camera>();
 		_antimatterValue = antimatterQuantity;
 		ChangeSlot(_selectedSlot);
 	}
@@ -76,12 +66,13 @@ public class PlayerBehaviour : MonoBehaviour {
 				if(_mode == PlayerMode.CombatMode){
 					//Instantiate and launch object
 					if(CheckAntimatter()){
-						_propsTemp = Instantiate(inventory[_selectedSlot].prefab, playerHead.position + playerHead.forward, playerHead.rotation).GetComponent<PropsBehaviour>();
-						_propsTemp.Print();
-						_propsTemp = null;
+						_propsPrinted = Instantiate(inventory[_selectedSlot].prefab, playerHead.position + playerHead.forward, playerHead.rotation).GetComponent<PropsBehaviour>();
+						_propsPrinted.Print();
+						_propsPrinted = null;
 					}
 				}else{
-					//Instantiate object
+					_propsPreview.Print();
+					_propsPreview = null;
 				}
 			}
 		}
@@ -149,13 +140,115 @@ public class PlayerBehaviour : MonoBehaviour {
 			SetAntimatter(_antimatterValue + antimatterRegen*Time.deltaTime);
 
 		}
+
+		// HIGHLIGHT & DESTROY ---------------------------------------------------
+
+		if(_mode == PlayerMode.BuildMode){
+			Highlight();
+			if(_propsSelected != null){
+				float dist = Vector3.Distance(_propsSelected.transform.position, playerHead.position);
+				if(dist <= destroyRange){
+					destroyText.transform.position = _cam.WorldToScreenPoint(_propsSelected.transform.position);
+					destroyText.transform.localScale = Vector3.one * (1f - dist/destroyRange);
+					destroyText.gameObject.SetActive(true);
+				}else{
+					destroyText.gameObject.SetActive(false);
+				}
+			}else{
+				destroyText.gameObject.SetActive(false);
+			}
+		}
+
+		if(Input.GetButtonDown("Destroy")){
+			Destroy(_propsSelected.gameObject);
+			_propsSelected = null;
+			_propsTemp = null;
+		}
+
+		// MODE SWAP ------------------------------------------------------------
+
+		if(Input.GetButtonDown("Action")){
+			if(_mode == PlayerMode.BuildMode){
+				SetMode(PlayerMode.CombatMode);
+			}else{
+				SetMode(PlayerMode.BuildMode);
+			}
+		}
+
+		// PREVIEW --------------------------------------------------------------
+
+
 	}
 
-	private void SetAntimatter(float value){
-		_antimatterValue = value;
-		antimatterSlider.DOValue(_antimatterValue/antimatterQuantity, (Mathf.Abs(_antimatterValue-antimatterSlider.value) / antimatterQuantity)*antimatterRegenLerpSpeed );
+	private void SetMode(PlayerMode mode){
+		switch(mode){
+			case PlayerMode.CombatMode : 
+				combatIcon.gameObject.SetActive(true);
+				buildIcon.gameObject.SetActive(false);
+				destroyText.gameObject.SetActive(false);
+
+				_mode = PlayerMode.CombatMode;
+				if(_propsPreview != null){
+					Destroy(_propsPreview.gameObject);
+					_propsPreview = null;
+				}
+				break;
+				
+			case PlayerMode.BuildMode : 
+				combatIcon.gameObject.SetActive(false);
+				buildIcon.gameObject.SetActive(true);
+
+
+				_mode = PlayerMode.BuildMode;
+				if(inventory[_selectedSlot].prefab != null){
+					_propsPreview = Instantiate(inventory[_selectedSlot].prefab).GetComponent<PropsBehaviour>();
+					_propsPreview.Preview();
+				}
+				break;
+		}
 	}
 
+	
+	#region Highlight
+
+	private void Highlight(){ //Call to highlight the props you are looking at
+		
+		if(Physics.Raycast(playerHead.position, playerHead.forward, out _hit, scanRange)){
+			_propsTemp = _hit.collider.GetComponent<PropsBehaviour>();
+			if(_propsTemp != null){
+				if(_propsSelected != null){
+					if(_propsTemp == _propsSelected){ //still looking at the same props
+						_propsTemp = null;
+					}else{ //from an already highlighted props to another one
+						_propsSelected.Highlight(false);
+						_propsSelected = _propsTemp;
+						_propsSelected.Highlight(true);
+						_propsTemp = null;
+					}
+				}else{ //from nothing to a new selected props
+					_propsSelected = _propsTemp;
+					_propsSelected.Highlight(true);
+					_propsTemp = null;
+				}
+			}else{ //Deselect
+				StopHighlight();
+			}
+		}else{ //Deselect
+			StopHighlight();
+		}
+	}
+
+	private void StopHighlight(){
+		if(_propsSelected != null){
+			_propsSelected.Highlight(false);
+			_propsSelected = null;
+		}
+	}
+
+	#endregion
+
+	#region Scan
+	
 	private void StartScan(){
 		if(Physics.Raycast(playerHead.position, playerHead.forward, out _hit, scanRange)){
 			_propsScanned = _hit.collider.GetComponent<PropsBehaviour>();
@@ -189,10 +282,43 @@ public class PlayerBehaviour : MonoBehaviour {
 		}
 	}
 
+	#endregion
+	
+	#region Inventory
+	public void AddProps(GameObject prefab, float scanningDuration, float printingDuration, float printingCost, int id){
+		if(prefab!=null){
+
+			foreach(PropsSlot ps in inventory){
+				if(ps.id == id){
+					//warning message when already scanned props
+					alreadyScannedText.color = new Color(alreadyScannedText.color.r, alreadyScannedText.color.g, alreadyScannedText.color.b, 1f);
+					alreadyScannedText.DOColor(new Color(alreadyScannedText.color.r, alreadyScannedText.color.g, alreadyScannedText.color.b, 0f), 1f);
+					return;
+				}
+			}
+
+			//adding props in the inventory
+			inventory[_selectedSlot].prefab = prefab;
+			inventory[_selectedSlot].scanningDuration = scanningDuration;
+			inventory[_selectedSlot].printingDuration = printingDuration;
+			inventory[_selectedSlot].printingCost = printingCost;
+			inventory[_selectedSlot].id = id;
+			inventoryText[_selectedSlot].DOText(prefab.name,0.5f);
+		}
+	}
 	private void ChangeSlot(int slot){
 		inventoryText[_selectedSlot].color = baseColor;
 		_selectedSlot = slot;
 		inventoryText[_selectedSlot].color = selectedColor;
+	}
+
+	#endregion
+
+	#region Antimatter
+
+	private void SetAntimatter(float value){
+		_antimatterValue = value;
+		antimatterSlider.DOValue(_antimatterValue/antimatterQuantity, (Mathf.Abs(_antimatterValue-antimatterSlider.value) / antimatterQuantity)*antimatterRegenLerpSpeed );
 	}
 
 	private bool CheckAntimatter(){
@@ -203,4 +329,6 @@ public class PlayerBehaviour : MonoBehaviour {
 		}
 		return false;
 	}
+
+	#endregion
 }
