@@ -26,6 +26,7 @@ public class PlayerBehaviour : MonoBehaviour {
 	public float maxFireRate;
 	public float antimatterQuantity;
 	public float antimatterRegen;
+	public float shotForce;
 	#endregion
 
 	#region PublicVarUI
@@ -51,6 +52,7 @@ public class PlayerBehaviour : MonoBehaviour {
 	private RaycastHit _hit = new RaycastHit();
 	private PlayerMode _mode = PlayerMode.CombatMode;
 	private Camera _cam;
+	private Tween _tweenShake = null;
 	private int _selectedSlot = 0;
 	private float _antimatterValue;
 	#endregion
@@ -73,7 +75,8 @@ public class PlayerBehaviour : MonoBehaviour {
 					if(CheckAntimatter()){
 						_propsPrinted = Instantiate(inventory[_selectedSlot].prefab, playerHead.position + playerHead.forward, playerHead.rotation).GetComponent<PropsBehaviour>();
 						_propsPrinted.SetOwner(this);
-						_propsPrinted.Print();
+						_propsPrinted.Shot(playerHead.forward * shotForce);
+						//_propsPrinted.Print();
 						_propsPrinted = null;
 					}
 				}else{
@@ -111,7 +114,7 @@ public class PlayerBehaviour : MonoBehaviour {
 		// CHANGE SLOT -----------------------------------------------------------
 
 		if(Input.GetAxis("Mouse ScrollWheel") != 0f){
-			if(Input.GetAxis("Mouse ScrollWheel") > 0f){
+			if(Input.GetAxis("Mouse ScrollWheel") < 0f){
 				if(_selectedSlot == 3){
 					ChangeSlot(0);
 				}else{
@@ -341,6 +344,12 @@ public class PlayerBehaviour : MonoBehaviour {
 			SetAntimatter(temp);
 			return true;
 		}
+		//Shake antimatter bar
+		if(_tweenShake != null){
+			_tweenShake.Kill(true);
+		}
+		_tweenShake = antimatterSlider.transform.DOShakeScale(0.3f,0.5f).OnComplete(()=> _tweenShake = null);
+		
 		return false;
 	}
 

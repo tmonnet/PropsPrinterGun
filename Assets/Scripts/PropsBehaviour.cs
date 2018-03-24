@@ -32,6 +32,8 @@ public class PropsBehaviour : MonoBehaviour {
 	private Tween _scanTween = null;
 	private PropsState _state;
 	private PlayerBehaviour _owner = null;
+	private bool _stucked = false;
+	private Vector3 _lastVelocity = Vector3.zero;
 
 	void Awake()
 	{
@@ -78,6 +80,16 @@ public class PropsBehaviour : MonoBehaviour {
 
 	}
 
+	public void Shot(Vector3 velocity){
+		_rb.isKinematic = false;
+		_collider.isTrigger = false;
+		_state = PropsState.Printed;
+		_printMaterial.SetFloat("_DissolveRatio", 1f);
+		_printMaterial.DOFloat(0f, "_DissolveRatio", 0.2f).SetEase(Ease.Linear);
+		_rb.constraints = RigidbodyConstraints.FreezeRotation;
+		_rb.AddForce(velocity, ForceMode.Impulse);
+	}
+
 	public void Highlight(bool value){
 		if(!_isScanned && _state == PropsState.Printed){
 			if(value){
@@ -115,16 +127,28 @@ public class PropsBehaviour : MonoBehaviour {
 		}
 	}
 
-	void OnCollisionEnter(Collision other)
+	void LateUpdate()
 	{
-		if(wallPenetration > 0f && other.transform.tag == "Penetrable"){
-			
-		}
+		if(!_stucked)
+			_lastVelocity = _rb.velocity;
 	}
 
-	void OnTriggerStay(Collider other)
+	void OnCollisionEnter(Collision other)
 	{
+		if(!_stucked){
+			if(other.transform.tag != "Player"){
 
+				_stucked = true;
+
+				if(wallPenetration > 0f && other.transform.tag == "Penetrable"){
+					transform.position = _rb.position + _lastVelocity.normalized * wallPenetration;
+					_rb.velocity = Vector3.zero;
+					_rb.isKinematic = true;
+				}else{
+					_rb.constraints = RigidbodyConstraints.None;
+				}
+			}
+		}
 	}
 
 	public PlayerBehaviour GetOwner(){

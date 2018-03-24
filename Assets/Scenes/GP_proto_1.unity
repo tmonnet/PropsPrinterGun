@@ -1386,6 +1386,16 @@ Prefab:
       value: 
       objectReference: {fileID: 1941872319670462, guid: 7f4e79ceba2317e419143cf4de225491,
         type: 2}
+    - target: {fileID: 54637913505918556, guid: 7f4e79ceba2317e419143cf4de225491,
+        type: 2}
+      propertyPath: m_Mass
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 114265272882989858, guid: 7f4e79ceba2317e419143cf4de225491,
+        type: 2}
+      propertyPath: printingCost
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 7f4e79ceba2317e419143cf4de225491, type: 2}
   m_IsPrefabParent: 0
@@ -1653,6 +1663,21 @@ Prefab:
       value: 
       objectReference: {fileID: 1015813843647576, guid: a5cacce985ea1174e8d42a14c1b54b53,
         type: 2}
+    - target: {fileID: 54378383852019880, guid: a5cacce985ea1174e8d42a14c1b54b53,
+        type: 2}
+      propertyPath: m_Mass
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 114553108755944894, guid: a5cacce985ea1174e8d42a14c1b54b53,
+        type: 2}
+      propertyPath: wallPenetration
+      value: 1000
+      objectReference: {fileID: 0}
+    - target: {fileID: 114553108755944894, guid: a5cacce985ea1174e8d42a14c1b54b53,
+        type: 2}
+      propertyPath: printingCost
+      value: 10
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: a5cacce985ea1174e8d42a14c1b54b53, type: 2}
   m_IsPrefabParent: 0
@@ -1716,6 +1741,10 @@ Prefab:
       propertyPath: mouseLook.smoothTime
       value: 50
       objectReference: {fileID: 0}
+    - target: {fileID: 100006, guid: c6453f8e1f814744d8b94e5a6d1f9942, type: 2}
+      propertyPath: m_TagString
+      value: Player
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c6453f8e1f814744d8b94e5a6d1f9942, type: 2}
   m_IsPrefabParent: 0
@@ -1744,6 +1773,7 @@ MonoBehaviour:
   maxFireRate: 0.2
   antimatterQuantity: 100
   antimatterRegen: 5
+  shotForce: 500
   inventoryText:
   - {fileID: 335406326}
   - {fileID: 200907896}
