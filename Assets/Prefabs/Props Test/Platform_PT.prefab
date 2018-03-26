@@ -129,8 +129,12 @@ MonoBehaviour:
   scanningDuration: 2
   printingDuration: 2
   printingCost: 10
-  wallPenetration: 1000
+  fireRate: 1
+  wallPenetration: 1
   localSpawnPoint: 2
+  rotLockedOnShot: 0
+  localRotation: 0
+  rotationOnShot: {x: 0, y: 0, z: 0}
   prefab: {fileID: 1015813843647576}
   scanStartValue: 0.249
   scanEndValue: 0.75

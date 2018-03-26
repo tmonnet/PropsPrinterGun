@@ -16,8 +16,12 @@ public class PropsBehaviour : MonoBehaviour {
 	public float scanningDuration;
 	public float printingDuration;
 	public float printingCost;
+	public float fireRate;
 	public float wallPenetration;
 	public float localSpawnPoint;
+	public bool rotLockedOnShot;
+	public bool localRotation;
+	public Vector3 rotationOnShot;
 	public GameObject prefab;
 	[Header("Material")]
 	public float scanStartValue;
@@ -87,7 +91,18 @@ public class PropsBehaviour : MonoBehaviour {
 		_state = PropsState.Printed;
 		_printMaterial.SetFloat("_DissolveRatio", 1f);
 		_printMaterial.DOFloat(0f, "_DissolveRatio", 0.2f).SetEase(Ease.Linear);
-		_rb.constraints = RigidbodyConstraints.FreezeRotation;
+		
+		if(localRotation){
+			_rb.rotation = Quaternion.Euler(transform.rotation.eulerAngles + rotationOnShot);
+		}else{
+			
+			_rb.rotation = Quaternion.Euler(rotationOnShot);
+		}
+
+		if(rotLockedOnShot){
+			_rb.constraints = RigidbodyConstraints.FreezeRotation;
+		}
+
 		_rb.AddForce(velocity, ForceMode.Impulse);
 	}
 
@@ -110,7 +125,7 @@ public class PropsBehaviour : MonoBehaviour {
 					_scanMaterial.SetFloat("_ScanValue", scanStartValue);
 					_isScanned = false;
 					_scanTween = null;
-					player.AddProps(prefab, scanningDuration, printingDuration, printingCost, localSpawnPoint, id);
+					player.AddProps(prefab, scanningDuration, printingDuration, printingCost, localSpawnPoint, fireRate, id);
 					//call method on the player to add this props in a slot
 				}
 			);
