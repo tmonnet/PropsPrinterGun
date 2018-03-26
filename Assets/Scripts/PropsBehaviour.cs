@@ -49,6 +49,7 @@ public class PropsBehaviour : MonoBehaviour {
 		_rb = GetComponent<Rigidbody>();
 		_state = PropsState.Printed;
 		_scanColor = _scanMaterial.color;
+		_scanMaterial.SetFloat("_ScanValue", scanStartValue);
 	}
 
 	public void Preview(){
@@ -91,7 +92,7 @@ public class PropsBehaviour : MonoBehaviour {
 		_state = PropsState.Printed;
 		_printMaterial.SetFloat("_DissolveRatio", 1f);
 		_printMaterial.DOFloat(0f, "_DissolveRatio", 0.2f).SetEase(Ease.Linear);
-		
+
 		if(localRotation){
 			_rb.rotation = Quaternion.Euler(transform.rotation.eulerAngles + rotationOnShot);
 		}else{
