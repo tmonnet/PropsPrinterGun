@@ -17,6 +17,7 @@ public class PropsBehaviour : MonoBehaviour {
 	public float printingDuration;
 	public float printingCost;
 	public float wallPenetration;
+	public float localSpawnPoint;
 	public GameObject prefab;
 	[Header("Material")]
 	public float scanStartValue;
@@ -109,7 +110,7 @@ public class PropsBehaviour : MonoBehaviour {
 					_scanMaterial.SetFloat("_ScanValue", scanStartValue);
 					_isScanned = false;
 					_scanTween = null;
-					player.AddProps(prefab, scanningDuration, printingDuration, printingCost, id);
+					player.AddProps(prefab, scanningDuration, printingDuration, printingCost, localSpawnPoint, id);
 					//call method on the player to add this props in a slot
 				}
 			);

@@ -9,6 +9,7 @@ public struct PropsSlot{
 	public float scanningDuration;
 	public float printingDuration;
 	public float printingCost;
+	public float spawnPoint;
 	public GameObject prefab;
 }
 
@@ -73,7 +74,7 @@ public class PlayerBehaviour : MonoBehaviour {
 				if(_mode == PlayerMode.CombatMode){
 					//Instantiate and launch object
 					if(CheckAntimatter()){
-						_propsPrinted = Instantiate(inventory[_selectedSlot].prefab, playerHead.position + playerHead.forward, playerHead.rotation).GetComponent<PropsBehaviour>();
+						_propsPrinted = Instantiate(inventory[_selectedSlot].prefab, playerHead.position + (playerHead.forward*inventory[_selectedSlot].spawnPoint), playerHead.rotation).GetComponent<PropsBehaviour>();
 						_propsPrinted.SetOwner(this);
 						_propsPrinted.Shot(playerHead.forward * shotForce);
 						//_propsPrinted.Print();
@@ -302,7 +303,7 @@ public class PlayerBehaviour : MonoBehaviour {
 	#endregion
 	
 	#region Inventory
-	public void AddProps(GameObject prefab, float scanningDuration, float printingDuration, float printingCost, int id){
+	public void AddProps(GameObject prefab, float scanningDuration, float printingDuration, float printingCost, float spawnPoint, int id){
 		if(prefab!=null){
 
 			foreach(PropsSlot ps in inventory){
@@ -319,6 +320,7 @@ public class PlayerBehaviour : MonoBehaviour {
 			inventory[_selectedSlot].scanningDuration = scanningDuration;
 			inventory[_selectedSlot].printingDuration = printingDuration;
 			inventory[_selectedSlot].printingCost = printingCost;
+			inventory[_selectedSlot].spawnPoint = spawnPoint;
 			inventory[_selectedSlot].id = id;
 			inventoryText[_selectedSlot].DOText(prefab.name,0.5f);
 		}
