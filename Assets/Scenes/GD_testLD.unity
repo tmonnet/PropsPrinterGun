@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028602, g: 0.22571698, b: 0.30692515, a: 1}
+  m_IndirectSpecularColor: {r: 0.18028565, g: 0.22571625, b: 0.3069241, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -6747,12 +6747,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_IsWalking: 0
-  m_WalkSpeed: 5
-  m_RunSpeed: 10
+  m_WalkSpeed: 7
+  m_RunSpeed: 15
   m_RunstepLenghten: 0.7
-  m_JumpSpeed: 10
-  m_StickToGroundForce: 10
-  m_GravityMultiplier: 2
+  m_JumpSpeed: 17
+  m_StickToGroundForce: 15
+  m_GravityMultiplier: 5.5
   m_MouseLook:
     XSensitivity: 2
     YSensitivity: 2
@@ -6881,11 +6881,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerHead: {fileID: 667563108}
-  scanRange: 10
+  scanRange: 7
   destroyRange: 5
+  buildRange: 4
   maxFireRate: 0.2
   antimatterQuantity: 100
-  antimatterRegen: 5
+  antimatterRegen: 15
   shotForce: 3000
   raycastMask:
     serializedVersion: 2
