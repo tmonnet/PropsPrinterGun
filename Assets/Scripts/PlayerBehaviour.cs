@@ -25,6 +25,7 @@ public class PlayerBehaviour : MonoBehaviour {
 	public Transform playerHead;
 	public float scanRange;
 	public float destroyRange;
+	public float buildRange;
 	public float maxFireRate;
 	public float antimatterQuantity;
 	public float antimatterRegen;
@@ -83,6 +84,7 @@ public class PlayerBehaviour : MonoBehaviour {
 				}else{
 					if(_propsPreview != null){
 						_propsPreview.Print();
+						_propsPreview.SetOwner(this);
 						_propsPreview = null;
 					}
 				}
@@ -165,6 +167,7 @@ public class PlayerBehaviour : MonoBehaviour {
 		// HIGHLIGHT & DESTROY ---------------------------------------------------
 
 		if(_mode == PlayerMode.BuildMode){
+			Preview();
 			Highlight();
 			if(_propsSelected != null && _propsSelected.GetOwner() == this){
 				float dist = Vector3.Distance(_propsSelected.transform.position, playerHead.position);
@@ -208,16 +211,6 @@ public class PlayerBehaviour : MonoBehaviour {
 
 	}
 
-	private void Shot(){
-		if(!_reloading && CheckAntimatter()){
-			_propsPrinted = Instantiate(inventory[_selectedSlot].prefab, playerHead.position + (playerHead.forward*inventory[_selectedSlot].spawnPoint), playerHead.rotation).GetComponent<PropsBehaviour>();
-			_propsPrinted.SetOwner(this);
-			_propsPrinted.Shot(playerHead.forward * shotForce);
-			//_propsPrinted.Print();
-			_propsPrinted = null;
-			_shotreloadCoroutine = StartCoroutine(ShotReloadCoroutine(inventory[_selectedSlot].fireRate));
-		}
-	}
 
 	private void SetMode(PlayerMode mode){
 		ReloadDisplayStop();
@@ -247,6 +240,28 @@ public class PlayerBehaviour : MonoBehaviour {
 		}
 	}
 
+	private void Preview(){
+		if(_propsPreview != null){
+			if(Physics.Raycast(playerHead.position, playerHead.forward, out _hit, buildRange, raycastMask)){
+				_propsPreview.transform.position = _hit.point +new Vector3(_hit.normal.x*transform.localScale.x, _hit.normal.y*transform.localScale.y, _hit.normal.z*transform.localScale.z) * 0.5f;
+			}else{
+				_propsPreview.transform.position = playerHead.position + playerHead.forward*buildRange;
+			}
+		}
+	}
+
+	#region Shoot
+	private void Shot(){
+		if(!_reloading && CheckAntimatter()){
+			_propsPrinted = Instantiate(inventory[_selectedSlot].prefab, playerHead.position + (playerHead.forward*inventory[_selectedSlot].spawnPoint), playerHead.rotation).GetComponent<PropsBehaviour>();
+			_propsPrinted.SetOwner(this);
+			_propsPrinted.Shot(playerHead.forward * shotForce);
+			//_propsPrinted.Print();
+			_propsPrinted = null;
+			_shotreloadCoroutine = StartCoroutine(ShotReloadCoroutine(inventory[_selectedSlot].fireRate));
+		}
+	}
+
 	private IEnumerator ShotReloadCoroutine(float delay){
 		if(_tweenReload != null){
 			_tweenReload.Kill();
@@ -266,7 +281,7 @@ public class PlayerBehaviour : MonoBehaviour {
 		}
 		reloadIcon.fillAmount = 0f;
 	}
-
+	#endregion
 	
 	#region Highlight
 
@@ -320,10 +335,10 @@ public class PlayerBehaviour : MonoBehaviour {
 
 	private void CheckScan(){
 		if(Physics.Raycast(playerHead.position, playerHead.forward, out _hit, scanRange, raycastMask)){
-			Debug.Log("Check");
+			//Debug.Log("Check");
 			_propsTemp = _hit.collider.GetComponent<PropsBehaviour>();
 			if(_propsTemp != _propsScanned){
-				Debug.Log("Abort");
+				//Debug.Log("Abort");
 				StopScan();
 			}
 		}else{
@@ -333,7 +348,7 @@ public class PlayerBehaviour : MonoBehaviour {
 
 	private void StopScan(){
 		scanCursor.SetScanning(false);
-		Debug.Log("Stop");
+		//Debug.Log("Stop");
 		if(_propsScanned != null){
 			_propsScanned.ScanStop();
 			_propsScanned = null;

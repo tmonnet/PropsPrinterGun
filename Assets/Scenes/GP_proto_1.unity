@@ -6883,6 +6883,7 @@ MonoBehaviour:
   playerHead: {fileID: 667563108}
   scanRange: 10
   destroyRange: 5
+  buildRange: 5
   maxFireRate: 0.2
   antimatterQuantity: 100
   antimatterRegen: 5

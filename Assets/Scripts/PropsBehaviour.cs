@@ -22,6 +22,7 @@ public class PropsBehaviour : MonoBehaviour {
 	public bool rotLockedOnShot;
 	public bool localRotation;
 	public Vector3 rotationOnShot;
+	public bool snapNormalOnBuild;
 	public GameObject prefab;
 	[Header("Material")]
 	public float scanStartValue;
@@ -55,6 +56,7 @@ public class PropsBehaviour : MonoBehaviour {
 	public void Preview(){
 		_rb.isKinematic = true;
 		_collider.isTrigger = true;
+		gameObject.layer = LayerMask.NameToLayer("Player");
 		_state = PropsState.Preview_Idle;
 		_printMaterial.SetFloat("_DissolveRatio", 1f);
 		_scanMaterial.SetFloat("_ScanValue", scanEndValue);
@@ -71,6 +73,7 @@ public class PropsBehaviour : MonoBehaviour {
 
 	//called when this props is printed
 	public void Print(){
+		gameObject.layer = LayerMask.NameToLayer("Default");
 		_rb.isKinematic = true;
 		_collider.isTrigger = false;
 		_state = PropsState.Printed_In_Progress;
