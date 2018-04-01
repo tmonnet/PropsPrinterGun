@@ -35,6 +35,7 @@ public class PropsBehaviour : MonoBehaviour {
 	private Collider _collider;
 	private Rigidbody _rb;
 	private bool _isScanned = false;
+	private bool _isShot=false;
 	private Tween _scanTween = null;
 	private PropsState _state;
 	private PlayerBehaviour _owner = null;
@@ -90,6 +91,7 @@ public class PropsBehaviour : MonoBehaviour {
 	}
 
 	public void Shot(Vector3 velocity){
+		_isShot = true;
 		_rb.isKinematic = false;
 		_collider.isTrigger = false;
 		_state = PropsState.Printed;
@@ -155,7 +157,7 @@ public class PropsBehaviour : MonoBehaviour {
 
 	void OnCollisionEnter(Collision other)
 	{
-		if(!_stucked){
+		if(!_stucked && _isShot){
 			if(other.transform.tag != "Player"){
 
 				_stucked = true;
@@ -168,6 +170,7 @@ public class PropsBehaviour : MonoBehaviour {
 					_rb.constraints = RigidbodyConstraints.None;
 				}
 			}
+			_isShot = false;
 		}
 	}
 
