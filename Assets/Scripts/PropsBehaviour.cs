@@ -27,6 +27,7 @@ public class PropsBehaviour : MonoBehaviour {
 	[Header("Material")]
 	public float scanStartValue;
 	public float scanEndValue;
+	public List<Material> matList = new List<Material>();
 
 	private Material _printMaterial;
 	private Material _scanMaterial;
@@ -52,6 +53,16 @@ public class PropsBehaviour : MonoBehaviour {
 		_state = PropsState.Printed;
 		_scanColor = _scanMaterial.color;
 		_scanMaterial.SetFloat("_ScanValue", scanStartValue);
+	}
+
+	private void SetMaterials(string name, float value){
+		if(matList.Count != 0){
+			foreach(Material m in matList){
+				m.SetFloat(name, value);
+			}
+		}else{
+			_scanMaterial.SetFloat(name, value);
+		}
 	}
 
 	public void Preview(){

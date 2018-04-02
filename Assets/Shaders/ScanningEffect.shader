@@ -2,6 +2,7 @@
 {
 	Properties
 	{
+		_MainTex ("Albedo (RGB)", 2D) = "white" {}
 		_Color ("Color", Color) = (1,1,1,1)
 		_ScanValue ("ScanValue", Range(0,1)) = 1.
 	}
@@ -55,7 +56,9 @@
 			fixed4 frag (v2f i) : SV_Target
 			{
 				float2 uv = i.localuv;
+				fixed4 albedo = tex2D(_MainTex, i.uv);
 				fixed4 col = float4(_Color.rgb, _Color.a * step((uv.y*0.5)+0.5, _ScanValue));
+				//col += albedo;
 				// apply fog
 				UNITY_APPLY_FOG(i.fogCoord, col);
 				return col;
