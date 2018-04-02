@@ -24,6 +24,7 @@ GameObject:
   - component: {fileID: 64816976677560436}
   - component: {fileID: 114714182045513586}
   - component: {fileID: 54201114818996206}
+  - component: {fileID: 114640265319459086}
   m_Layer: 0
   m_Name: SM_Ship
   m_TagString: Untagged
@@ -95,7 +96,7 @@ Rigidbody:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1034332639506368}
   serializedVersion: 2
-  m_Mass: 500
+  m_Mass: 50
   m_Drag: 0.1
   m_AngularDrag: 0.05
   m_UseGravity: 1
@@ -117,6 +118,19 @@ MeshCollider:
   m_CookingOptions: 14
   m_SkinWidth: 0.01
   m_Mesh: {fileID: 4300000, guid: 58a115985b0d6274fbc27ce722630536, type: 3}
+--- !u!114 &114640265319459086
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1034332639506368}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 098c900471d4863488f0da41e3d236bf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fx: {fileID: 1972088271711030, guid: c62ee873a62d772489aa615904f6bd60, type: 2}
+  delay: 1.5
 --- !u!114 &114714182045513586
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -142,3 +156,5 @@ MonoBehaviour:
   prefab: {fileID: 1034332639506368}
   scanStartValue: 0
   scanEndValue: 1
+  matList: []
+  explosionSpawner: 1

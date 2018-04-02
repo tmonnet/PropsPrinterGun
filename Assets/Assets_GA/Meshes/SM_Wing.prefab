@@ -127,7 +127,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8684f15a1330dc41937729d43daa6b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  id: 145
+  id: 146
   scanningDuration: 1
   printingDuration: 2
   printingCost: 10

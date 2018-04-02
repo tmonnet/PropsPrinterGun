@@ -28,6 +28,8 @@ public class PropsBehaviour : MonoBehaviour {
 	public float scanStartValue;
 	public float scanEndValue;
 	public List<Material> matList = new List<Material>();
+	[Header("FX")]
+	public bool explosionSpawner = false;
 
 	private Material _printMaterial;
 	private Material _scanMaterial;
@@ -121,6 +123,10 @@ public class PropsBehaviour : MonoBehaviour {
 		}
 
 		_rb.AddForce(velocity, ForceMode.Impulse);
+
+		if(explosionSpawner){
+			GetComponent<ExplosionSpawn>().Explode();
+		}
 	}
 
 	public void Highlight(bool value){
